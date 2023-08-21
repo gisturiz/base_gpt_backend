@@ -11,7 +11,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY") or "OPENAI_API_KEY"
 # initialize connection to pinecone (get API key at app.pinecone.io)
 api_key = os.getenv("PINECONE_API_KEY") or "PINECONE_API_KEY"
 # find your environment next to the api key in pinecone console
-env = os.getenv("PINECONE_ENVIRONMENT") or "PINECONE_ENVIRONMENT"
+env = os.getenv("PINECONE_INDEX") or "PINECONE_INDEX"
 pinecone.init(api_key=api_key, enviroment=env)
 
 # openai function without context
