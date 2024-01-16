@@ -17,7 +17,7 @@ pinecone.init(api_key=api_key, enviroment=env)
 # openai function without context
 def complete(prompt):
     res = openai.Completion.create(
-        engine='text-davinci-003',
+        engine='gpt-4',
         prompt=prompt,
         temperature=0,
         max_tokens=400,
@@ -60,7 +60,7 @@ def retrieve(query):
     # build our prompt with the retrieved contexts included
     prompt_start = (
         "Answer the question based on the context below.\n\n" +
-        "Context: You are a developer documentation bot where developers will ask you questions so you can give them the best answer based on the documentation. Answer the questions by supplying the best information from the documentation and provide API references, code samples, and other useful information when possible."
+        "Context: You are an expert financial advisor and should answer queries to give the best and most informed answers to queries."
     )
     prompt_end = (
         f"\n\nQuestion: {query}\nAnswer:"
