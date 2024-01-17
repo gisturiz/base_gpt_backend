@@ -52,7 +52,7 @@ def retrieve(query):
     # get relevant contexts
     res = index.query(xq, top_k=3, include_metadata=True)
     print(res)
-    URL = res['matches'][0]['metadata']['url']
+    URL = res['matches'][0]['metadata']['source']
     contexts = [
         x['metadata']['text'] for x in res['matches']
     ]
