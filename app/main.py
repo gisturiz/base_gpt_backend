@@ -1,12 +1,12 @@
 import os
-import openai
+from openai import OpenAI
 import pinecone
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
 # openai key
-openai.api_key = os.getenv("OPENAI_API_KEY") or "OPENAI_API_KEY"
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # initialize connection to pinecone (get API key at app.pinecone.io)
 api_key = os.getenv("PINECONE_API_KEY") or "PINECONE_API_KEY"
@@ -16,15 +16,10 @@ pinecone.init(api_key=api_key, enviroment=env)
 
 # openai function without context
 def complete(prompt):
-    res = openai.Completion.create(
-        engine='gpt-4',
-        prompt=prompt,
+    res = client.chat.completions.create(
+        model='gpt-4',
+        messages=[prompt],
         temperature=0,
-        max_tokens=400,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0,
-        stop=None
     )
     return res['choices'][0]['text'].strip()
 
@@ -41,9 +36,9 @@ limit = 3750
 
 
 def retrieve(query):
-    res = openai.Embedding.create(
+    res = client.embeddings.create(
         input=[query],
-        engine=embed_model
+        model=embed_model
     )
 
     # retrieve from Pinecone
