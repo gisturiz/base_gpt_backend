@@ -53,12 +53,12 @@ def retrieve(query):
     # get relevant contexts
     res = index.query(xq, top_k=3, include_metadata=True)
     print(res)
-    URL = res['matches'][0]['metadata']['url']
+    URLs = [match['metadata']['url'] for match in res['matches']]
     contexts = [
         x['metadata']['text'] for x in res['matches']
     ]
 
-    return [contexts, URL]
+    return [contexts, URLs]
 class TextIn(BaseModel):
     text: str
 
