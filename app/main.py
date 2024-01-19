@@ -27,7 +27,7 @@ def complete(query, context):
         ],
         temperature=0,
     )
-    return res['choices'][0]['text'].strip()
+    return res.choices[0].message.content
 
 
 # connect to index
