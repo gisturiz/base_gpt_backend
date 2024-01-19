@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
 # openai key
-client = OpenAI(os.getenv("OPENAI_API_KEY"))
+client = OpenAI()
 
 # initialize connection to pinecone (get API key at app.pinecone.io)
 api_key = os.getenv("PINECONE_API_KEY") or "PINECONE_API_KEY"
