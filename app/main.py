@@ -15,10 +15,13 @@ env = os.getenv("PINECONE_INDEX") or "PINECONE_INDEX"
 pinecone.init(api_key=api_key, enviroment=env)
 
 # openai function without context
-def complete(prompt):
+def complete(query, prompt):
     res = client.chat.completions.create(
         model='gpt-4',
-        messages=[prompt],
+        messages=[
+            {'role': 'system', 'content': f'You are an expert financial advisor and should answer queries to give the best and most informed answers to queries. Please use the following context to answer the question: {prompt}.'},
+            {'role': 'user', 'content': query}
+        ],
         temperature=0,
     )
     return res['choices'][0]['text'].strip()
@@ -52,30 +55,30 @@ def retrieve(query):
         x['metadata']['text'] for x in res['matches']
     ]
 
-    # build our prompt with the retrieved contexts included
-    prompt_start = (
-        "Answer the question based on the context below.\n\n" +
-        "Context: You are an expert financial advisor and should answer queries to give the best and most informed answers to queries."
-    )
-    prompt_end = (
-        f"\n\nQuestion: {query}\nAnswer:"
-    )
-    # append contexts until hitting limit
-    for i in range(1, len(contexts)):
-        if len("\n\n---\n\n".join(contexts[:i])) >= limit:
-            prompt = (
-                prompt_start +
-                "\n\n---\n\n".join(contexts[:i-1]) +
-                prompt_end
-            )
-            break
-        elif i == len(contexts)-1:
-            prompt = (
-                prompt_start +
-                "\n\n---\n\n".join(contexts) +
-                prompt_end
-            )
-    return [prompt, URL]
+    # # build our prompt with the retrieved contexts included
+    # prompt_start = (
+    #     "Answer the question based on the context below.\n\n" +
+    #     "Context: You are an expert financial advisor and should answer queries to give the best and most informed answers to queries."
+    # )
+    # prompt_end = (
+    #     f"\n\nQuestion: {query}\nAnswer:"
+    # )
+    # # append contexts until hitting limit
+    # for i in range(1, len(contexts)):
+    #     if len("\n\n---\n\n".join(contexts[:i])) >= limit:
+    #         prompt = (
+    #             prompt_start +
+    #             "\n\n---\n\n".join(contexts[:i-1]) +
+    #             prompt_end
+    #         )
+    #         break
+    #     elif i == len(contexts)-1:
+    #         prompt = (
+    #             prompt_start +
+    #             "\n\n---\n\n".join(contexts) +
+    #             prompt_end
+    #         )
+    return [contexts, URL]
 class TextIn(BaseModel):
     text: str
 
@@ -103,6 +106,6 @@ def home():
 @app.post("/predict", response_model=PredictionOut)
 def predict(payload: TextIn):
     query_with_contexts = retrieve(payload.text)
-    res = complete(query_with_contexts[0])
+    res = complete(payload.text, query_with_contexts[0])
     url = query_with_contexts[1]
     return {"question": payload.text, "answer": res, "url": url}
