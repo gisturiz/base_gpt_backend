@@ -15,12 +15,15 @@ env = os.getenv("PINECONE_INDEX") or "PINECONE_INDEX"
 pinecone.init(api_key=api_key, enviroment=env)
 
 # openai function without context
-def complete(query, prompt):
+def complete(query, context):
+    #augment the query with context
+    augmented_query = "\n\n---\n\n".join(context)+"\n\n-----\n\n"+query
+
     res = client.chat.completions.create(
         model='gpt-4',
         messages=[
-            {'role': 'system', 'content': f'You are an expert financial advisor and should answer queries to give the best and most informed answers to queries. Please use the following context to answer the question: {prompt}.'},
-            {'role': 'user', 'content': query}
+            {'role': 'system', 'content': f"""You are financial Q&A bot. A highly intelligent system that answers user questions based on the information provided by the user above each question. If the information can not be found in the information provided by the user you truthfully say "I don't know"."""},
+            {'role': 'user', 'content': augmented_query}
         ],
         temperature=0,
     )
@@ -55,29 +58,6 @@ def retrieve(query):
         x['metadata']['text'] for x in res['matches']
     ]
 
-    # # build our prompt with the retrieved contexts included
-    # prompt_start = (
-    #     "Answer the question based on the context below.\n\n" +
-    #     "Context: You are an expert financial advisor and should answer queries to give the best and most informed answers to queries."
-    # )
-    # prompt_end = (
-    #     f"\n\nQuestion: {query}\nAnswer:"
-    # )
-    # # append contexts until hitting limit
-    # for i in range(1, len(contexts)):
-    #     if len("\n\n---\n\n".join(contexts[:i])) >= limit:
-    #         prompt = (
-    #             prompt_start +
-    #             "\n\n---\n\n".join(contexts[:i-1]) +
-    #             prompt_end
-    #         )
-    #         break
-    #     elif i == len(contexts)-1:
-    #         prompt = (
-    #             prompt_start +
-    #             "\n\n---\n\n".join(contexts) +
-    #             prompt_end
-    #         )
     return [contexts, URL]
 class TextIn(BaseModel):
     text: str
