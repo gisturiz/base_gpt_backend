@@ -42,7 +42,7 @@ def retrieve(query):
     )
 
     # retrieve from Pinecone
-    xq = res['data'][0]['embedding']
+    xq = res.data[0].embedding
 
     # get relevant contexts
     res = index.query(xq, top_k=3, include_metadata=True)
