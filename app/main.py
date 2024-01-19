@@ -65,7 +65,7 @@ class TextIn(BaseModel):
 class PredictionOut(BaseModel):
     question: str
     answer: str
-    url: str
+    url: list
 
 # initialize app
 app = FastAPI()
