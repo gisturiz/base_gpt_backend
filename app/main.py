@@ -25,7 +25,7 @@ def complete(query, context):
             {'role': 'system', 'content': f"""You are financial Q&A bot. A highly intelligent system that answers user questions based on the information provided by the user above each question. If the information can not be found in the information provided by the user you truthfully say "I don't know"."""},
             {'role': 'user', 'content': augmented_query}
         ],
-        temperature=0,
+        temperature=0.2,
     )
     return res.choices[0].message.content
 
